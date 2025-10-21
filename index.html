@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor Darah Generator</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        :root {
+            --color-blood-elegant: #A91D3A;
+            --color-blood-elegant-light: #C7384F;
+            --color-blood-darkest: #800020;
+            --color-blood-accent: #E63946;
+            --color-blood-faded: #e09f9f;
+            --color-dark-text: #222222;
+            --color-light-text: #555555;
+            --color-border-light: #DDDDDD;
+            --color-background-gray: #F8F8F8;
+            --color-white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #e0e0e0 0%, #f9f9f9 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: var(--color-dark-text);
+        }
+
+        h1 {
+            color: var(--color-blood-elegant);
+            margin-bottom: 30px;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        #main-content {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .input-form {
+            background-color: var(--color-white);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            color: var(--color-dark-text);
+        }
+
+        #total-data-indicator {
+            text-align: center;
+            font-weight: 700;
+            color: var(--color-blood-elegant);
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 2px solid var(--color-border-light);
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--color-dark-text);
+            font-size: 0.9em;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border-light);
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #fcfcfc;
+            color: var(--color-dark-text);
+            box-sizing: border-box;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--color-blood-elegant-light);
+            box-shadow: 0 0 0 2px rgba(169, 29, 58, 0.2);
+        }
+
+        .btn {
+            background-color: var(--color-blood-elegant);
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 700;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 25px;
+            width: 100%;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover {
+            background-color: var(--color-blood-elegant-light);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 20px;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+            margin-top: 0;
+            padding: 10px;
+            font-size: 0.9em;
+        }
+
+        #editBtn {
+            background-color: #5a67d8;
+        }
+
+        #editBtn:hover {
+            background-color: #434c9c;
+        }
+
+        #preview-area {
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #dataCard {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            text-align: center;
+            padding-bottom: 5px; 
+            box-sizing: border-box;
+            position: relative;
+            color: var(--color-white);
+            
+            background-color: var(--color-blood-elegant-light);
+            background-image: linear-gradient(145deg, var(--color-blood-darkest) 0%, var(--color-blood-elegant-light) 100%);
+            
+            background-repeat: no-repeat; 
+            background-size: cover; 
+            background-position: center center;
+        }
+
+        #watermarkText {
+            display: none; 
+        }
+
+        #subtleHeaderWatermark {
+            position: absolute;
+            top: 5px;
+            left: 0;
+            right: 0;
+
+            font-size: 0.6em;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.397);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 2;
+        }
+
+        #cardCopyright {
+            font-size: 0.75em;
+            font-weight: 600; 
+            color: var(--color-light-text);
+            margin-top: 15px;
+            margin-bottom: 0; 
+            text-transform: uppercase;
+            text-align: center;
+            padding-top: 10px;
+            border-top: 1px solid var(--color-border-light); 
+        }
+        
+        #previewCopyright {
+            font-size: 0.75em;
+            font-weight: 600; 
+            color: var(--color-light-text);
+            margin-top: 15px;
+            margin-bottom: 0; 
+            text-transform: uppercase;
+            text-align: center;
+            padding: 10px 0;
+        }
+        
+        #cardCopyright a, #previewCopyright a {
+            color: var(--color-blood-elegant);
+            text-decoration: none;
+            font-weight: 700;
+        }
+        
+        #cardCopyright a:hover, #previewCopyright a:hover {
+            color: var(--color-blood-elegant-light);
+        }
+
+
+        .card-header-new, .card-price, .card-duration, .card-features, 
+        #cardKontakNama, #cardWA_link, #cardSlogan {
+            position: relative;
+            z-index: 2; 
+        }
+        
+        .card-header-new {
+            padding: 40px 20px 20px; 
+        }
+
+        #cardNamaPasien {
+            font-size: 1.5em;
+            font-weight: 800;
+            color: var(--color-white);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .card-sub-header {
+            font-size: 0.75em;
+            color: var(--color-blood-faded);
+            margin-bottom: 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-price {
+            font-size: 3.5em;
+            font-weight: 900;
+            color: var(--color-white);
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .card-duration {
+            font-size: 0.75em;
+            color: var(--color-blood-faded);
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .card-features {
+            list-style: none;
+            padding: 0 30px;
+            margin: 0;
+            margin-bottom: 30px;
+        }
+
+        .card-features li {
+            font-size: 0.95em;
+            color: var(--color-white);
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
+        #feature4.hidden-feature {
+            display: none;
+            padding: 0;
+            border-bottom: none;
+            height: 0;
+            min-height: 0;
+            margin: 0;
+        }
+
+        #cardKontakNama {
+            font-size: 0.9em;
+            font-weight: 700;
+            color: var(--color-white);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        #cardWA_link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--color-white);
+            color: var(--color-blood-elegant);
+            padding: 12px 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: 700;
+            transition: background-color 0.3s ease;
+            width: calc(100% - 60px);
+            margin: 0 30px 15px 30px;
+            box-sizing: border-box;
+            letter-spacing: 0.5px;
+            cursor: default;
+            text-align: center;
+        }
+
+        #cardWA_link #cardWA_text {
+            font-size: 1.1em;
+            font-weight: 800;
+            line-height: 1.2;
+            color: var(--color-blood-elegant);
+            order: 1;
+        }
+
+        #cardWA_link #embedded_kontak_nama {
+            font-size: 0.7em;
+            font-weight: 600;
+            color: var(--color-light-text);
+            margin-top: 2px;
+            text-transform: uppercase;
+            order: 2;
+        }
+
+
+        #cardSlogan {
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-top: 5px;
+            margin-bottom: 3px;
+            color: var(--color-blood-faded);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .error {
+            color: var(--color-blood-elegant);
+            font-size: 0.85em;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .input-form {
+                max-width: 95%;
+                width: 95%;
+                padding: 15px;
+                margin: 0 auto 20px auto;
+            }
+
+            #preview-area {
+                width: 100%;
+            }
+
+            #dataCard {
+                max-width: 300px;
+            }
+            
+            #cardWA_link #embedded_kontak_nama {
+                font-size: 0.6em; 
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1><i class="fas fa-hand-holding-medical"></i> Generator Flyer Donor Darah</h1>
+
+    <div class="container">
+        <div id="main-content">
+            <div id="form-area" class="input-form">
+                <div id="total-data-indicator">
+                    Total Kartu Dibuat: <span id="generated-count">0</span>
+                </div>
+                <h2>Detail Permintaan</h2>
+                <form id="dataForm">
+                    <label for="nama_pasien"><i class="fas fa-user-injured"></i> Nama Pasien:</label>
+                    <input type="text" id="nama_pasien" required placeholder="Nama Lengkap Pasien">
+
+                    <label for="usia"><i class="fas fa-birthday-cake"></i> Usia Pasien (Tahun):</label>
+                    <input type="text" id="usia" required placeholder="Cth: 39">
+
+                    <label for="golongan_darah"><i class="fas fa-droplet"></i> Golongan Darah & Rhesus:</label>
+                    <select id="golongan_darah" required>
+                        <option value="" disabled selected>Pilih Golongan Darah</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                    </select>
+
+                    <label for="jumlah"><i class="fas fa-cubes"></i> Jumlah Kebutuhan (Kantong):</label>
+                    <select id="jumlah" required>
+                        <option value="" disabled selected>Pilih Jumlah Kantong</option>
+                    </select>
+
+                    <label for="rs"><i class="fas fa-hospital"></i> Lokasi Dirawat (RS):</label>
+                    <select id="rs" required>
+                        <option value="" disabled selected>Pilih RS</option>
+                        <option value="RSUD PRABUMULIH">RSUD PRABUMULIH</option>
+                        <option value="RS BUNDA PRABUMULIH">RS BUNDA PRABUMULIH</option>
+                        <option value="RS PERTAMINA">RS PERTAMINA</option>
+                    </select>
+
+                    <label for="kontak_nama"><i class="fas fa-address-book"></i> Kontak Person (Nama):</label>
+                    <input type="text" id="kontak_nama" required placeholder="Nama Kontak">
+
+                    <label for="wa"><i class="fab fa-whatsapp"></i> Nomor WA Kontak:</label>
+                    <input type="text" id="wa" required placeholder="Cth: 0821xxxxxxxx">
+
+                    <label for="tanggal_butuh"><i class="fas fa-calendar-alt"></i> Tanggal Dibutuhkan:</label>
+                    <input type="date" id="tanggal_butuh" required>
+
+                    <button type="submit" id="generateBtn" class="btn"><i class="fas fa-image"></i> Cetak Data</button>
+                </form>
+                <p id="error-message" class="error" style="display:none;">Harap isi semua kolom dengan benar!</p>
+
+                <div id="cardCopyright">
+                    &copy; 2025 - 
+                    <a href="https://www.instagram.com/sabolabek" target="_blank" rel="noopener noreferrer">
+                        adrianosnjry
+                    </a>
+                </div>
+            </div>
+
+            <div id="preview-area">
+                <div id="dataCard">
+                    
+                    
+                    <div class="card-header-new">
+                        
+                        <div id="subtleHeaderWatermark">FORUM RELAWAN DONOR DARAH PRABUMULIH</div>
+                        
+                        <div id="cardNamaPasien">BUSINESS</div>
+                        <div class="card-sub-header">LOREM IPSUM</div>
+                        <div class="card-price" id="cardPrice">$90</div>
+                        <div class="card-duration" id="cardDuration">Per Month</div>
+                    </div>
+                    <ul class="card-features">
+                        <li id="feature1">800 Projects</li>
+                        <li id="feature2">80 Team Members</li>
+                        <li id="feature3">200 Personal Contacts</li>
+                        <li id="feature4">17.000 Messages</li>
+                    </ul>
+
+                    <div id="cardKontakNama">HUBUNGI :</div>
+
+                    <div class="contact-wa-new" id="cardWA_link">
+                        <span id="cardWA_text">0821-2189-8832</span>
+                        <span id="embedded_kontak_nama">DZAWIN NUR</span>
+                    </div>
+
+                    <div id="cardSlogan">KITA SEHAT MEREKA SELAMAT</div>
+                    
+                </div>
+
+                <div class="action-buttons">
+                    <button id="editBtn" class="btn" onclick="editData()"><i class="fas fa-edit"></i> Edit Data</button>
+                    <button id="downloadBtn" class="btn" onclick="downloadCard()"><i class="fas fa-download"></i>
+                        Download JPG</button>
+                </div>
+                
+                <div id="previewCopyright">
+                    &copy; 2025 - 
+                    <a href="https://www.instagram.com/sabolabek" target="_blank" rel="noopener noreferrer">
+                        adrianosnjry
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lastFormData = {};
+        let generatedCount = parseInt(localStorage.getItem('flyerCount')) || 0;
+
+        function updateCountDisplay() {
+            document.getElementById('generated-count').textContent = generatedCount;
+            localStorage.setItem('flyerCount', generatedCount);
+        }
+
+        (function fillJumlahOptions() {
+            const selectJumlah = document.getElementById('jumlah');
+            for (let i = 1; i <= 10; i++) {
+                const option = document.createElement('option');
+                option.value = i + ' kantong';
+                option.textContent = i + ' kantong';
+                selectJumlah.appendChild(option);
+            }
+        })();
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString + 'T00:00:00');
+            const options = {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            };
+            return date.toLocaleDateString('id-ID', options);
+        }
+
+        function showForm() {
+            document.getElementById('form-area').style.display = 'block';
+            document.getElementById('preview-area').style.display = 'none';
+        }
+
+        function hideForm() {
+            document.getElementById('form-area').style.display = 'none';
+        }
+
+        function showPreview() {
+            document.getElementById('preview-area').style.display = 'flex';
+        }
+
+        document.getElementById('dataForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            generateCard();
+        });
+
+        function generateCard() {
+            const data = {
+                namaPasien: document.getElementById('nama_pasien').value.trim(),
+                usia: document.getElementById('usia').value.trim(),
+                golonganDarah: document.getElementById('golongan_darah').value.trim().toUpperCase(),
+                jumlah: document.getElementById('jumlah').value.trim(),
+                rs: document.getElementById('rs').value.trim(),
+                kontakNama: document.getElementById('kontak_nama').value.trim().toUpperCase(),
+                wa: document.getElementById('wa').value.trim(),
+                tanggalButuh: document.getElementById('tanggal_butuh').value.trim()
+            };
+
+            const errorMessage = document.getElementById('error-message');
+
+            if (Object.values(data).some(val => val === '')) {
+                errorMessage.style.display = 'block';
+                return;
+            }
+            errorMessage.style.display = 'none';
+
+            lastFormData = data;
+
+            generatedCount++;
+            updateCountDisplay();
+            
+            document.getElementById('subtleHeaderWatermark').textContent = "FORUM RELAWAN DONOR DARAH PRABUMULIH";
+
+            document.getElementById('cardNamaPasien').textContent = `DIBUTUHKAN`;
+            document.querySelector('.card-sub-header').textContent = `Pendonor Darah`;
+            document.getElementById('cardPrice').textContent = data.golonganDarah;
+            document.getElementById('cardDuration').textContent = data.jumlah;
+
+            const formattedDate = formatDate(data.tanggalButuh);
+
+            document.getElementById('feature1').textContent = data.namaPasien;
+            document.getElementById('feature2').textContent = `Dirawat di ${data.rs}`;
+            document.getElementById('feature3').textContent = `Untuk tgl ${formattedDate}`;
+            document.getElementById('feature4').textContent = ``;
+            document.getElementById('feature4').classList.add('hidden-feature');
+
+
+            document.getElementById('cardKontakNama').textContent = "HUBUNGI :";
+            document.getElementById('cardWA_text').textContent = data.wa;
+            document.getElementById('embedded_kontak_nama').textContent = data.kontakNama;
+
+
+            hideForm();
+            showPreview();
+        }
+
+        function editData() {
+            document.getElementById('nama_pasien').value = lastFormData.namaPasien;
+            document.getElementById('usia').value = lastFormData.usia;
+            document.getElementById('golongan_darah').value = lastFormData.golonganDarah;
+            document.getElementById('jumlah').value = lastFormData.jumlah;
+            document.getElementById('rs').value = lastFormData.rs;
+            document.getElementById('kontak_nama').value = lastFormData.kontakNama;
+            document.getElementById('wa').value = lastFormData.wa;
+            document.getElementById('tanggal_butuh').value = lastFormData.tanggalButuh;
+
+            document.getElementById('feature4').classList.remove('hidden-feature');
+
+            showForm();
+        }
+
+        function downloadCard() {
+            const cardNode = document.getElementById('dataCard');
+            const namaPasien = lastFormData.namaPasien.replace(/\s/g, '_').substring(0, 10);
+            const namaFile = 'Flyer_Donor_' + namaPasien + '.jpeg';
+
+            const scale = 2;
+            const cssWidth = cardNode.clientWidth;
+            const cssHeight = cardNode.clientHeight;
+            const targetWidth = cssWidth * scale;
+            const targetHeight = cssHeight * scale;
+
+            domtoimage.toJpeg(cardNode, {
+                    quality: 0.95,
+                    width: targetWidth,
+                    height: targetHeight,
+                    style: {
+                        transform: 'scale(' + scale + ')',
+                        transformOrigin: 'top left',
+                        width: cssWidth + 'px',
+                        height: cssHeight + 'px',
+                    },
+                    fontFaces: true,
+                    filter: function (node) {
+                        return (node.tagName !== 'LINK' || node.rel !== 'stylesheet');
+                    }
+                })
+                .then(function (dataUrl) {
+                    const link = document.createElement('a');
+                    link.download = namaFile;
+                    link.href = dataUrl;
+                    link.click();
+                })
+                .catch(function (error) {
+                    console.error('Gagal mengunduh gambar:', error);
+                    alert('Gagal mengunduh gambar! Coba gunakan browser lain.');
+                });
+        }
+
+        window.onload = function () {
+            showForm();
+            updateCountDisplay();
+        };
+    </script>
+</body>
+
+</html>
