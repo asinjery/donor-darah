@@ -626,7 +626,7 @@
         function downloadCard() {
             const cardNode = document.getElementById('dataCard');
             const namaPasien = lastFormData.namaPasien.replace(/\s/g, '_').substring(0, 10);
-            const namaFile = 'Flyer_Donor_' + namaPasien + '.jpeg';
+            const namaFile = 'DATA_' + namaPasien + '.jpeg';
 
             const scale = 2;
             const cssWidth = cardNode.clientWidth;
@@ -670,4 +670,5 @@
 
 
 </html>
+
 
